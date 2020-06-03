@@ -1,0 +1,35 @@
+name: "eer-device"
+manufacturer: "IOTech."
+model: "Some 3rd party app sending JSON"
+labels:
+  - "json"
+description: "EER Device that sends in Json"
+
+deviceResources:
+  - name: "eer_data"
+    description: "json message"
+    properties:
+      value:
+        { type: "String", readWrite: "W" , mediaType : "application/json" }
+      units:
+        { type: "String", readWrite: "R" }
+
+deviceCommands:
+  - name: "eer_data"
+    get:
+      - { operation: "get", deviceResource: "eer_data"}
+
+coreCommands:
+  -
+    name: "eer_data"
+    get:
+      path: "/api/v1/device/{deviceId}/eer_data"
+      responses:
+        -
+          code: "200"
+          description: ""
+          expectedValues: ["eer_data"]
+        -
+          code: "503"
+          description: "service unavailable"
+          expectedValues: []

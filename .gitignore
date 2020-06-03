@@ -13,3 +13,22 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+
+*.log
+
+.idea/
+vendor/
+cmd/device-rest-go
+glide.lock
+go.sum
+
+# snap files
+*.snap
+*.assert
+prime/
+stage/
+parts/
+squashfs-root/
+coverage.out
+VERSION
