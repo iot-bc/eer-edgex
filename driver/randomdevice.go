@@ -1,13 +1,19 @@
+// -*- Mode: Go; indent-tabs-mode: t -*-
+//
+// Copyright (C) 2018 IOTech Ltd
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package driver
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"strconv"
+	"strings"
 	"time"
-	"encoding/json"
-
-	"github.com/edgexfoundry/device-sdk-go/pkg/models"
 )
 
 type Data struct {
@@ -21,11 +27,26 @@ type Data struct {
 }
 
 type myDevice struct {
-	data  string
+	data string
 }
 
-func (d *myDevice) value(valueType models.ValueType) (string, error) {
+func (d *myDevice) value() (string, error) {
 	data, err := json.Marshal(randomData())
+
+	fmt.Println("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+	url := "http://172.19.0.1:48080/api/v1/event" //请求地址
+	contentType := "application/json"
+	//参数，多个用&隔开
+	str := "{" +
+		"\"device\":\"devicetest2\", " +
+		"\"readings\":[{\"name\":\"json\",\"value\":\"7777777777\"}]" +
+		"}"
+
+	data2 := strings.NewReader(fmt.Sprintf("%s", str))
+	resp, _ := http.Post(url, contentType, data2)
+
+	fmt.Println(resp)
+
 	return string(data), err
 }
 
@@ -33,17 +54,16 @@ func newDevice() *myDevice {
 	return &myDevice{data: ""}
 }
 
-
-func randomData() Data{
+func randomData() Data {
 	rand.Seed(time.Now().UnixNano())
 
-	heartRate :=  rand.Intn(110-70) + 70  // 心率在70到110之间波动
+	heartRate := rand.Intn(110-70) + 70 // 心率在70到110之间波动
 
-	temperature := float64(rand.Intn(10)) / 10 + 36.5        // 温度36.5到37.5之间波动
+	temperature := float64(rand.Intn(10))/10 + 36.5 // 温度36.5到37.5之间波动
 	temperature = FloatRound2(temperature)
 
 	stepNumber := 0
-	stepNumber += rand.Intn(7)  // 每隔10秒增加7以内的随机步数
+	stepNumber += rand.Intn(7) // 每隔10秒增加7以内的随机步数
 
 	climbHeight := 0.0
 	climbHeight += rand.Float64()
@@ -63,10 +83,8 @@ func randomData() Data{
 	return newData
 }
 
-// 截取两位小数
+// 截取1位小数
 func FloatRound2(value float64) float64 {
 	res, _ := strconv.ParseFloat(fmt.Sprintf("%.1f", value), 64)
 	return res
 }
-
-

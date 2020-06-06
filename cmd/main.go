@@ -1,9 +1,3 @@
-// -*- Mode: Go; indent-tabs-mode: t -*-
-//
-// Copyright (C) 2018-2019 IOTech Ltd
-//
-// SPDX-License-Identifier: Apache-2.0
-
 package main
 
 import (
@@ -13,10 +7,11 @@ import (
 )
 
 const (
-	serviceName string = "eer-edgex"
+	serviceName string = "device-random"
 )
 
 func main() {
 	d := driver.NewProtocolDriver()
-	startup.Bootstrap(serviceName, eer_edgex.Version, d)
+	startup.Bootstrap(serviceName, device_random.Version, d)
+
 }

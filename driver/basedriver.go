@@ -45,16 +45,13 @@ func (d *MyDriver) HandleReadCommands(deviceName string, protocols map[string]mo
 	now := time.Now().UnixNano()
 
 	for i, req := range reqs {
-		t := req.Type
-		v, err := rd.value(t)
+		v, err := rd.value()
 		if err != nil {
 			return nil, err
 		}
 		var cv *dsModels.CommandValue
-		switch t {
-		case dsModels.String:
-			cv, _ = dsModels.NewStringValue(req.DeviceResourceName, now, v)
-		}
+
+		cv = dsModels.NewStringValue(req.DeviceResourceName, now, v)
 		res[i] = cv
 	}
 
