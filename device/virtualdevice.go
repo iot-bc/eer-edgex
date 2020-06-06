@@ -11,6 +11,9 @@ import (
 	"time"
 )
 
+// 每天的清零时间
+const ResetTime string = "06:00"
+
 type Data struct {
 	HeartRate         int     `json:"heart_rate"`
 	Temperature       float64 `json:"temperature"`
@@ -39,18 +42,34 @@ func generateRandomData(deviceName string) Data {
 	oldData := getDataFromDevice(deviceName)
 
 	rand.Seed(time.Now().UnixNano())
-	heartRate := rand.Intn(110-70) + 70             // 心率在70到110之间波动
+	var heartRate = rand.Intn(110-70) + 70 // 心率在70到110之间波动
+
 	temperature := float64(rand.Intn(10))/10 + 36.5 // 温度36.5到37.5之间波动
 	temperature = FloatRound1(temperature)
 
-	stepNumber := oldData.StepNumber
+	var stepNumber int
+	var climbHeight float64
+	var calorie float64
+
+	// 获取当前时间
+	t := time.Now()
+	cur := t.Format("15:04")
+
+	if strings.EqualFold(cur, ResetTime) {
+		stepNumber = 0
+		climbHeight = 0.0
+		calorie = 0.0
+	} else {
+		stepNumber = oldData.StepNumber
+		climbHeight = oldData.ClimbHeight
+		calorie = oldData.Calorie
+	}
+
 	stepNumber += rand.Intn(7) // 每隔10秒增加7以内的随机步数
 
-	climbHeight := oldData.ClimbHeight
 	climbHeight += rand.Float64()
 	climbHeight = FloatRound1(climbHeight)
 
-	calorie := oldData.Calorie
 	calorie += float64(rand.Intn(5)) + rand.Float64()
 	calorie = FloatRound1(calorie)
 

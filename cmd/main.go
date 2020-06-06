@@ -12,6 +12,7 @@ const (
 
 func main() {
 
+	// 先进行基础配置
 	config()
 
 	d := driver.NewProtocolDriver()
