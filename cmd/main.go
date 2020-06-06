@@ -11,6 +11,9 @@ const (
 )
 
 func main() {
+
+	config()
+
 	d := driver.NewProtocolDriver()
 	startup.Bootstrap(serviceName, device_random.Version, d)
 
