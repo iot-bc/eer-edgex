@@ -1,6 +1,7 @@
 package device
 
 import (
+	"eer-edgex/privacy"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -24,12 +25,19 @@ type Data struct {
 	DiastolicPressure int     `json:"diastolic_pressure"`
 }
 
-func postData(deviceName string) error {
-	randomData := generateRandomData(deviceName)
+func PostData(deviceName string) error {
+
+	fakeName := privacy.AnonymizeDevice(deviceName)
+
+	randomData := generateRandomData(fakeName)
 	jsonData, err := json.Marshal(randomData)
+
+	// 通过对设备采集到的数据进行加密
+	encryptData := privacy.AESEncryptData(string(jsonData))
+
 	url := "http://localhost:48080/api/v1/event" //请求地址
 	contentType := "application/json"
-	content := `{"device":` + deviceName + `, "readings":[{"name":"eer-data", "value":` + string(jsonData) + `}]}`
+	content := `{"device":` + fakeName + `, "readings":[{"name":"eer-data", "value":` + encryptData + `}]}`
 
 	data := strings.NewReader(fmt.Sprintf("%s", content))
 	resp, _ := http.Post(url, contentType, data)

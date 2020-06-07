@@ -7,10 +7,11 @@
 package driver
 
 import (
+	"eer-edgex/device"
+	"eer-edgex/privacy"
 	HttpReceiver "eer-edgex/server"
 	UserService "eer-edgex/service"
 	"eer-edgex/utils"
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -40,31 +41,50 @@ type myDevice struct {
 }
 
 func (d *myDevice) value() (string, error) {
+	//data, err := json.Marshal(randomData())
+	//return string(data), err
+	return "", nil
+}
+
+func handle() {
+
+	fmt.Println("Handle test")
 
 	deviceName, cmd := HttpReceiver.Receiver()
-	if strings.EqualFold(cmd, DELETE) {
-		UserService.DeleteDevice(deviceName)
 
-		feedback := "Deleted Successfully"
+	// 在区块链上与deviceName相对应的fakeName
+	fakeName := privacy.AnonymizeDevice(deviceName)
+
+	if strings.EqualFold(cmd, DELETE) {
+
+		UserService.DeleteDevice(fakeName)
+
+		feedback := "Device " + deviceName + " Deleted Successfully"
 
 		_ = utils.PostData(URL, feedback)
 
 	} else if strings.EqualFold(cmd, REGISTER) {
-		UserService.RegisterDevice(deviceName)
+		UserService.RegisterDevice(fakeName)
 
-		feedback := "Registered Successfully"
+		feedback := "Device " + deviceName + " Registered Successfully"
 
 		_ = utils.PostData(URL, feedback)
 
 	} else if strings.EqualFold(cmd, GETDATA) {
-		data := UserService.GetDataFromDevice(deviceName)
+		data := UserService.GetDataFromDevice(fakeName)
 
-		_ = utils.PostData(URL, data)
+		// 从edgex里取出来的设备数据通过区块链进行解密，在发送给应用端
+		decryptData := privacy.AESDecryptData(data)
+
+		_ = utils.PostData(URL, decryptData)
 
 	}
+}
 
-	data, err := json.Marshal(randomData())
-	return string(data), err
+func dataCollect() {
+
+	device.PostData("")
+
 }
 
 func newDevice() *myDevice {

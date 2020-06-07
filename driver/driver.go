@@ -46,6 +46,7 @@ func (d *MyDriver) HandleReadCommands(deviceName string, protocols map[string]mo
 
 	for i, req := range reqs {
 		v, err := rd.value()
+		handle()
 		if err != nil {
 			return nil, err
 		}
