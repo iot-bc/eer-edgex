@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func config() {
+func Config() {
 	addAddressables()
 	postDeviceProfile()
 	addDeviceService()

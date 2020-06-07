@@ -1,13 +1,13 @@
 package service
 
 import (
+	"eer-edgex/utils"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 )
 
-func registerDevice(deviceName string) {
+func RegisterDevice(deviceName string) {
 	url := "http://localhost:48081/api/v1/device"
 	content := `{
 		"name": ` + deviceName + `,` +
@@ -21,13 +21,10 @@ func registerDevice(deviceName string) {
     	"profile":{"name":"device monitor profile"}
 	}`
 
-	contentType := "application/json"
-	data := strings.NewReader(fmt.Sprintf("%s", content))
-	resp, _ := http.Post(url, contentType, data)
-	fmt.Println(resp)
+	_ = utils.PostData(url, content)
 }
 
-func getDataFromDevice(deviceName string) string {
+func GetDataFromDevice(deviceName string) string {
 	url := `http://localhost:48080/api/v1/event/device/` + deviceName + `/10`
 	res, _ := http.Get(url)
 	defer res.Body.Close()
@@ -37,7 +34,7 @@ func getDataFromDevice(deviceName string) string {
 	return deviceData
 }
 
-func deleteDevice(deviceName string) {
+func DeleteDevice(deviceName string) {
 	url := "http://localhost:48081/api/v1/device/name/" + deviceName
 
 	req, _ := http.NewRequest("DELETE", url, nil)

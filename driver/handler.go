@@ -7,13 +7,22 @@
 package driver
 
 import (
+	HttpReceiver "eer-edgex/server"
+	UserService "eer-edgex/service"
+	"eer-edgex/utils"
 	"encoding/json"
 	"fmt"
 	"math/rand"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
+)
+
+const (
+	DELETE   string = "delete"
+	REGISTER string = "register"
+	GETDATA  string = "get"
+	URL      string = "localhost:9000"
 )
 
 type Data struct {
@@ -31,22 +40,30 @@ type myDevice struct {
 }
 
 func (d *myDevice) value() (string, error) {
+
+	deviceName, cmd := HttpReceiver.Receiver()
+	if strings.EqualFold(cmd, DELETE) {
+		UserService.DeleteDevice(deviceName)
+
+		feedback := "Deleted Successfully"
+
+		_ = utils.PostData(URL, feedback)
+
+	} else if strings.EqualFold(cmd, REGISTER) {
+		UserService.RegisterDevice(deviceName)
+
+		feedback := "Registered Successfully"
+
+		_ = utils.PostData(URL, feedback)
+
+	} else if strings.EqualFold(cmd, GETDATA) {
+		data := UserService.GetDataFromDevice(deviceName)
+
+		_ = utils.PostData(URL, data)
+
+	}
+
 	data, err := json.Marshal(randomData())
-
-	fmt.Println("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-	url := "http://172.19.0.1:48080/api/v1/event" //请求地址
-	contentType := "application/json"
-	//参数，多个用&隔开
-	str := "{" +
-		"\"device\":\"devicetest2\", " +
-		"\"readings\":[{\"name\":\"json\",\"value\":\"7777777777\"}]" +
-		"}"
-
-	data2 := strings.NewReader(fmt.Sprintf("%s", str))
-	resp, _ := http.Post(url, contentType, data2)
-
-	fmt.Println(resp)
-
 	return string(data), err
 }
 
