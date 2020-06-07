@@ -43,7 +43,7 @@ type myDevice struct {
 func (d *myDevice) value() (string, error) {
 	//data, err := json.Marshal(randomData())
 	//return string(data), err
-	return "", nil
+	return "data", nil
 }
 
 func handle() {

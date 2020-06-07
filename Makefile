@@ -2,11 +2,11 @@
 
 GO = CGO_ENABLED=0 GO111MODULE=on go
 
-MICROSERVICES=cmd/device-random
+MICROSERVICES=cmd/eer-edgex
 
 .PHONY: $(MICROSERVICES)
 
-DOCKERS=docker_device_random_go
+DOCKERS=docker-eer-edgex
 .PHONY: $(DOCKERS)
 
 VERSION=$(shell cat ./VERSION 2>/dev/null || echo 0.0.0)
@@ -16,7 +16,7 @@ GOFLAGS=-ldflags "-X github.com/edgexfoundry/device-random.Version=$(VERSION)"
 build: $(MICROSERVICES)
 	$(GO) build ./...
 
-cmd/device-random:
+cmd/eer-edgex:
 	$(GO) build $(GOFLAGS) -o $@ ./cmd
 
 test:
@@ -32,7 +32,7 @@ clean:
 
 docker: $(DOCKERS)
 
-docker_device_random_go:
+docker-eer-edgex:
 	docker build \
 		--label "git_sha=$(GIT_SHA)" \
 		-t edgexfoundry/docker-device-random-go:$(GIT_SHA) \
