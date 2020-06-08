@@ -1,3 +1,5 @@
+
+use mysql;
 CREATE TABLE devices (
     uid int(10) not null auto_increment,
     devicename varchar(255) not null,

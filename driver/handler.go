@@ -9,14 +9,9 @@ package driver
 import (
 	"eer-edgex/device"
 	"eer-edgex/device/dbs"
-	"eer-edgex/privacy"
-	HttpReceiver "eer-edgex/server"
-	UserService "eer-edgex/service"
-	"eer-edgex/utils"
 	"fmt"
 	"math/rand"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -49,43 +44,8 @@ func (d *myDevice) value() (string, error) {
 
 func handle() {
 
-	fmt.Println("Handle test")
+	//fmt.Println("Handle test")
 
-	deviceName, cmd := HttpReceiver.Receiver()
-
-	// 在区块链上与deviceName相对应的fakeName
-	fakeName := privacy.AnonymizeDevice(deviceName)
-
-	if strings.EqualFold(cmd, DELETE) {
-
-		UserService.DeleteDevice(fakeName)
-
-		// 在本地数据库也删除该设备
-		dbs.DeleteDevice(fakeName)
-
-		feedback := "Device " + deviceName + " Deleted Successfully"
-
-		_ = utils.PostData(URL, feedback)
-
-	} else if strings.EqualFold(cmd, REGISTER) {
-		UserService.RegisterDevice(fakeName)
-
-		// 新设备在本地数据库建立备份
-		dbs.AddDevice(fakeName)
-
-		feedback := "Device " + deviceName + " Registered Successfully"
-
-		_ = utils.PostData(URL, feedback)
-
-	} else if strings.EqualFold(cmd, GETDATA) {
-		data := UserService.GetDataFromDevice(fakeName)
-
-		// 从edgex里取出来的设备数据通过区块链进行解密，在发送给应用端
-		decryptData := privacy.AESDecryptData(data)
-
-		_ = utils.PostData(URL, decryptData)
-
-	}
 }
 
 // 收集所有设备数据
@@ -133,4 +93,8 @@ func randomData() Data {
 func FloatRound2(value float64) float64 {
 	res, _ := strconv.ParseFloat(fmt.Sprintf("%.1f", value), 64)
 	return res
+}
+
+func DangerWarning() {
+
 }

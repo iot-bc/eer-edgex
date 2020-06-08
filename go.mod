@@ -1,6 +1,7 @@
 module eer-edgex
 
 require (
+	github.com/drone/routes v0.0.0-20130816182705-853bef2b2311
 	github.com/edgexfoundry/device-sdk-go v1.2.1
 	github.com/edgexfoundry/go-mod-core-contracts v0.1.58
 	github.com/go-sql-driver/mysql v1.5.0
