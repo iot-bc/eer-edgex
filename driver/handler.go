@@ -8,6 +8,7 @@ package driver
 
 import (
 	"eer-edgex/device"
+	"eer-edgex/device/dbs"
 	"eer-edgex/privacy"
 	HttpReceiver "eer-edgex/server"
 	UserService "eer-edgex/service"
@@ -59,12 +60,18 @@ func handle() {
 
 		UserService.DeleteDevice(fakeName)
 
+		// 在本地数据库也删除该设备
+		dbs.DeleteDevice(fakeName)
+
 		feedback := "Device " + deviceName + " Deleted Successfully"
 
 		_ = utils.PostData(URL, feedback)
 
 	} else if strings.EqualFold(cmd, REGISTER) {
 		UserService.RegisterDevice(fakeName)
+
+		// 新设备在本地数据库建立备份
+		dbs.AddDevice(fakeName)
 
 		feedback := "Device " + deviceName + " Registered Successfully"
 
@@ -81,10 +88,12 @@ func handle() {
 	}
 }
 
+// 收集所有设备数据
 func dataCollect() {
-
-	device.PostData("")
-
+	devices := dbs.FindAllDevices()
+	for _, deviceName := range devices {
+		_ = device.PostData(deviceName)
+	}
 }
 
 func newDevice() *myDevice {
